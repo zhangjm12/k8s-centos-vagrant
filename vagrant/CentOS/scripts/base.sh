@@ -50,6 +50,8 @@ echo "Installing Docker and Kubernetes"
 yum install -y kubelet-1.9.3-0 kubeadm kubectl
 
 sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sed -e '/KUBELET_CADVISOR_ARGS=/ s/^#*/#/' -i /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sed -i "s/10.96.0.10/10.243.0.10/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 cat <<EOF >  /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
