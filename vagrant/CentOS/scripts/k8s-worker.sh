@@ -2,8 +2,13 @@
 
 IPADDR=$1
 TOKEN=$2
+NODEIP=$3
 
 if [ ! -e /etc/kubernetes/kubelet.conf ]; then
+    echo "Environment=\"KUBELET_EXTRA_ARGS=--node-ip=${NODEIP}\"" >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    systemctl daemon-reload
+    systemctl restart kubelet
+
     echo kubeadm join --token ${TOKEN} --discovery-token-unsafe-skip-ca-verification ${IPADDR}:6443
     kubeadm join --token ${TOKEN} --discovery-token-unsafe-skip-ca-verification ${IPADDR}:6443
 

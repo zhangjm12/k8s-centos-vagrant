@@ -4,6 +4,7 @@ def workerIP(num)
   return "192.168.56.#{num+150}"
 end
 
+#image = "centos/7"
 image = "sbeliakou/centos"
 scripts_dir = "/vagrant/vagrant/CentOS/scripts/"
 
@@ -13,7 +14,7 @@ Vagrant.configure("2") do |config|
 
     config.ssh.insert_key = false
     config.vm.synced_folder ".", "/vagrant", disabled: true
-    config.vm.synced_folder "../../", "/vagrant", 
+    config.vm.synced_folder "../../", "/vagrant", type: "virtualbox",
         owner: "vagrant", 
         group: "vagrant"
 
@@ -34,12 +35,15 @@ Vagrant.configure("2") do |config|
 
             # Master/Worker Provisioning
             node.vm.provision "Kubernetes Provisioning", type: "shell" do |shell|
-                shell.inline = "bash #{scripts_dir}/k8s-#{(index == 0) ? 'master' : 'worker'}.sh $1 $2"
-                shell.args = [workerIP(0), $token]
+                shell.inline = "bash #{scripts_dir}/k8s-#{(index == 0) ? 'master' : 'worker'}.sh $1 $2 $3"
+                shell.args = [workerIP(0), $token, workerIP(index)]
             end
 
             # Provision all services once the last worker is done
             if (index == $worker_count) then
+                node.vm.provision "Servie Account Role Binding", type: "shell",  
+                    inline: "bash #{scripts_dir}/k8s-role-binding.sh"
+
                 node.vm.provision "Master Isolation", type: "shell",  
                     inline: "bash #{scripts_dir}/k8s-master-isolation.sh" if ($worker_count == 0)
 

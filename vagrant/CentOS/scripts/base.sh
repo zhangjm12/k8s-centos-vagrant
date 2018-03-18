@@ -1,9 +1,12 @@
 #!/bin/bash
 
+export https_proxy=http://10.100.17.37:80
+export no_proxy=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+
 yum install -y deltarpm
 
-echo "Updating System"
-yum update -y
+# echo "Updating System"
+# yum update -y
 
 # yum install -y nss-mdns avahi avahi-tools
 # systemctl enable avahi-daemon
@@ -15,10 +18,21 @@ getenforce | grep Disabled || setenforce 0
 echo "SELINUX=disabled" > /etc/sysconfig/selinux
 
 echo "Installing EPEL REPO and tools"
-yum install -y epel-release wget ntp jq net-tools bind-utils
+yum install -y epel-release
+yum install -y wget ntp jq net-tools bind-utils
 
 systemctl start ntpd
 systemctl enable ntpd
+
+# install docker-ce
+yum install -y yum-utils device-mapper-persistent-data lvm2
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+cat <<EOF > /etc/sysconfig/docker
+HTTPS_PROXY=http://10.100.17.37:80
+NO_PROXY=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+EOF
+yum install -y docker-ce
+sed -i "s/\[Service\]/\[Service\]\nEnvironmentFile=-\/etc\/sysconfig\/docker/g" /lib/systemd/system/docker.service
 
 # https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 # https://kubernetes.io/docs/setup/independent/install-kubeadm/
@@ -33,13 +47,9 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 
 echo "Installing Docker and Kubernetes"
-yum install -y docker runc kubelet kubeadm kubectl kubernetes-cni 
+yum install -y kubelet-1.9.3-0 kubeadm kubectl
 
-cat << EOF > /etc/docker/daemon.json
-{
-    "$([[ $(docker --version) =~ 1.12. ]] && echo exec-opt || echo exec-opts)": ["native.cgroupdriver=systemd"]
-}
-EOF
+sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 cat <<EOF >  /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
@@ -47,6 +57,7 @@ net.bridge.bridge-nf-call-iptables = 1
 EOF
 sysctl --system
 
+systemctl daemon-reload
 systemctl start docker
 systemctl enable docker 
 systemctl enable kubelet
@@ -66,3 +77,5 @@ swapoff --all
 
 # systemctl start dnsmasq
 # systemctl enable dnsmasq
+
+unset https_proxy no_proxy

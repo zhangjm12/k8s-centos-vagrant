@@ -3,12 +3,18 @@
 IPADDR=$1
 TOKEN=$2
 
-yum install -y etcd
+# yum install -y etcd
 
 if [ ! -e /etc/kubernetes/kubelet.conf ]; then
-    echo kubeadm init --apiserver-advertise-address ${IPADDR} --token ${TOKEN} --pod-network-cidr 10.244.0.0/16
+    echo "Environment=\"KUBELET_EXTRA_ARGS=--node-ip=${IPADDR}\"" >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    systemctl daemon-reload
+    systemctl restart kubelet
+
+    echo kubeadm init --apiserver-advertise-address ${IPADDR} --token ${TOKEN} --pod-network-cidr 10.244.0.0/16 --service-cidr=10.243.0.0/16 --kubernetes-version=v1.9.3
     kubeadm init \
         --pod-network-cidr 10.244.0.0/16 \
+        --service-cidr=10.243.0.0/16 \
+        --kubernetes-version=v1.9.3 \
         --apiserver-advertise-address ${IPADDR} \
         --token ${TOKEN}
 
