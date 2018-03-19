@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export https_proxy=http://10.100.17.37:80
-export no_proxy=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+export no_proxy=192.168.12.218,192.168.12.224,192.168.12.22,192.168.12.222,192.168.11.251
 
 yum install -y deltarpm
 
@@ -29,7 +29,7 @@ yum install -y yum-utils device-mapper-persistent-data lvm2
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 cat <<EOF > /etc/sysconfig/docker
 HTTPS_PROXY=http://10.100.17.37:80
-NO_PROXY=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+NO_PROXY=192.168.12.218,192.168.12.224,192.168.12.22,192.168.12.222,192.168.11.251
 EOF
 yum install -y docker-ce
 sed -i "s/\[Service\]/\[Service\]\nEnvironmentFile=-\/etc\/sysconfig\/docker/g" /lib/systemd/system/docker.service
