@@ -27,11 +27,20 @@ systemctl enable ntpd
 # install docker-ce
 yum install -y yum-utils device-mapper-persistent-data lvm2
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install -y docker-ce
+
 cat <<EOF > /etc/sysconfig/docker
 HTTPS_PROXY=http://10.100.17.37:80
 NO_PROXY=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
 EOF
-yum install -y docker-ce
+
+mkdir -p /etc/docker
+cat <<EOF > /etc/docker/daemon.json
+{
+  "insecure-registries":["10.0.0.0/8"]
+}
+EOF
+
 sed -i "s/\[Service\]/\[Service\]\nEnvironmentFile=-\/etc\/sysconfig\/docker/g" /lib/systemd/system/docker.service
 
 # https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
@@ -47,7 +56,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 
 echo "Installing Docker and Kubernetes"
-yum install -y kubelet-1.9.3-0 kubeadm kubectl
+yum install -y kubelet kubeadm kubectl
 
 sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sed -e '/KUBELET_CADVISOR_ARGS=/ s/^#*/#/' -i /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
