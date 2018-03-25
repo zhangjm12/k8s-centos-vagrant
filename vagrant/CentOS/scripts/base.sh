@@ -1,9 +1,9 @@
 #!/bin/bash
 
-export https_proxy=http://10.100.17.37:80
-export no_proxy=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+#export https_proxy=http://10.100.17.37:80
+#export no_proxy=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
 
-yum install -y deltarpm
+#yum install -y deltarpm
 
 # echo "Updating System"
 # yum update -y
@@ -29,10 +29,10 @@ yum install -y yum-utils device-mapper-persistent-data lvm2
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 yum install -y docker-ce
 
-cat <<EOF > /etc/sysconfig/docker
-HTTPS_PROXY=http://10.100.17.37:80
-NO_PROXY=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
-EOF
+#cat <<EOF > /etc/sysconfig/docker
+#HTTPS_PROXY=http://10.100.17.37:80
+#NO_PROXY=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+#EOF
 
 mkdir -p /etc/docker
 cat <<EOF > /etc/docker/daemon.json
@@ -41,7 +41,7 @@ cat <<EOF > /etc/docker/daemon.json
 }
 EOF
 
-sed -i "s/\[Service\]/\[Service\]\nEnvironmentFile=-\/etc\/sysconfig\/docker/g" /lib/systemd/system/docker.service
+# sed -i "s/\[Service\]/\[Service\]\nEnvironmentFile=-\/etc\/sysconfig\/docker/g" /lib/systemd/system/docker.service
 
 # https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 # https://kubernetes.io/docs/setup/independent/install-kubeadm/
@@ -89,4 +89,4 @@ swapoff --all
 # systemctl start dnsmasq
 # systemctl enable dnsmasq
 
-unset https_proxy no_proxy
+# unset https_proxy no_proxy

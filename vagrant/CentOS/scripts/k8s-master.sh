@@ -10,11 +10,10 @@ if [ ! -e /etc/kubernetes/kubelet.conf ]; then
     systemctl daemon-reload
     systemctl restart kubelet
 
-    echo kubeadm init --apiserver-advertise-address ${IPADDR} --token ${TOKEN} --pod-network-cidr 10.244.0.0/16 --service-cidr=10.243.0.0/16 --kubernetes-version=v1.9.3
+    echo kubeadm init --apiserver-advertise-address ${IPADDR} --token ${TOKEN} --pod-network-cidr 10.244.0.0/16 --service-cidr=10.243.0.0/16
     kubeadm init \
         --pod-network-cidr 10.244.0.0/16 \
         --service-cidr=10.243.0.0/16 \
-        --kubernetes-version=v1.9.3 \
         --apiserver-advertise-address ${IPADDR} \
         --token ${TOKEN}
 
