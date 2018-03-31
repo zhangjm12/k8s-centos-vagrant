@@ -1,9 +1,9 @@
 #!/bin/bash
 
 export https_proxy=http://10.100.17.37:80
-export no_proxy=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+export no_proxy=192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
 
-yum install -y deltarpm
+# yum install -y deltarpm
 
 # echo "Updating System"
 # yum update -y
@@ -25,13 +25,14 @@ systemctl start ntpd
 systemctl enable ntpd
 
 # install docker-ce
-yum install -y yum-utils device-mapper-persistent-data lvm2
-yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-yum install -y docker-ce
+#yum install -y yum-utils device-mapper-persistent-data lvm2
+#yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#yum install -y docker-ce
+yum install -y docker
 
-cat <<EOF > /etc/sysconfig/docker
+cat <<EOF >> /etc/sysconfig/docker
 HTTPS_PROXY=http://10.100.17.37:80
-NO_PROXY=10.100.47.240,192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+NO_PROXY=192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
 EOF
 
 mkdir -p /etc/docker
@@ -41,7 +42,7 @@ cat <<EOF > /etc/docker/daemon.json
 }
 EOF
 
-sed -i "s/\[Service\]/\[Service\]\nEnvironmentFile=-\/etc\/sysconfig\/docker/g" /lib/systemd/system/docker.service
+# sed -i "s/\[Service\]/\[Service\]\nEnvironmentFile=-\/etc\/sysconfig\/docker/g" /lib/systemd/system/docker.service
 
 # https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 # https://kubernetes.io/docs/setup/independent/install-kubeadm/
@@ -58,7 +59,7 @@ EOF
 echo "Installing Docker and Kubernetes"
 yum install -y kubelet kubeadm kubectl
 
-sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+# sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sed -e '/KUBELET_CADVISOR_ARGS=/ s/^#*/#/' -i /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sed -i "s/10.96.0.10/10.243.0.10/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 

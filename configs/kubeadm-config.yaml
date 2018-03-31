@@ -6,9 +6,9 @@ networking:
   podSubnet: 10.244.0.0/16
   serviceSubnet: 10.243.0.0/16
 token: MYTOKEN
-apiServerExtraArgs:
-  feature-gates: "PersistentLocalVolumes=true,VolumeScheduling=true,MountPropagation=true"
-controllerManagerExtraArgs:
-  feature-gates: "PersistentLocalVolumes=true,VolumeScheduling=true,MountPropagation=true"
-schedulerExtraArgs:
-  feature-gates: "PersistentLocalVolumes=true,VolumeScheduling=true,MountPropagation=true"
+# apiServerExtraArgs:
+#   feature-gates: "PersistentLocalVolumes=true,VolumeScheduling=true,MountPropagation=true"
+# controllerManagerExtraArgs:
+#   feature-gates: "PersistentLocalVolumes=true,VolumeScheduling=true,MountPropagation=true"
+# schedulerExtraArgs:
+#   feature-gates: "PersistentLocalVolumes=true,VolumeScheduling=true,MountPropagation=true"
