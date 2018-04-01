@@ -21,6 +21,11 @@ echo "Installing EPEL REPO and tools"
 yum install -y epel-release
 yum install -y wget ntp jq net-tools bind-utils
 
+sed -e '/server/ s/^#*/#/' -i /etc/ntp.conf
+echo -e '\nserver 10.100.46.31 iburst' >> /etc/ntp.conf
+timedatectl set-local-rtc 0
+timedatectl set-timezone Asia/Shanghai
+
 systemctl start ntpd
 systemctl enable ntpd
 
