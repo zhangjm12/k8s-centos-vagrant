@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: istio
+  namespace: istio-system
+spec:
+  rules:
+    - host: istio.ecr.myvm.site
+      http:
+        paths:
+          - backend:
+              serviceName: istio-ingress
+              servicePort: 80
+            path: /
+    - host: pm1.ecr.myvm.site
+      http:
+        paths:
+          - backend:
+              serviceName: prometheus
+              servicePort: 9090
+            path: /
+    - host: grafana1.ecr.myvm.site
+      http:
+        paths:
+          - backend:
+              serviceName: grafana
+              servicePort: 3000
+            path: /

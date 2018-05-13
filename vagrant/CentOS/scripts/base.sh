@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export https_proxy=http://10.100.17.37:80
-export no_proxy=192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+export no_proxy=192.168.0.23,192.168.0.24,192.168.0.26,192.168.0.27
 
 # yum install -y deltarpm
 
@@ -37,7 +37,7 @@ yum install -y docker
 
 cat <<EOF >> /etc/sysconfig/docker
 HTTPS_PROXY=http://10.100.17.37:80
-NO_PROXY=192.168.56.150,192.168.56.151,192.168.56.152,192.168.56.153
+NO_PROXY=192.168.0.23,192.168.0.24,192.168.0.26,192.168.0.27
 EOF
 
 mkdir -p /etc/docker

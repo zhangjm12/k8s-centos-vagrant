@@ -5,12 +5,13 @@ metadata:
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/session-cookie-hash: sha1
     nginx.ingress.kubernetes.io/session-cookie-name: route
+    inginx.ingress.kubernetes.io/vts-filter-key: $uri $server_name
     kubernetes.io/ingress.class: nginx
   name: sock-shop
   namespace: sock-shop
 spec:
   rules:
-    - host: socks.svc.myvm.site
+    - host: socks.ecr.myvm.site
       http:
         paths:
           - backend:
